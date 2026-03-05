@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "capnweb": "^0.5.0"
+  },
+  "_npx": {
+    "packages": [
+      "capnweb"
+    ]
+  }
+}
