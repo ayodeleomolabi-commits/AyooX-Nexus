@@ -1,28 +1,33 @@
 import streamlit as st
-import pandas as pd
-import time
+import json, time, os
 
-st.set_page_config(page_title="AyooX Clinical Feasibility", layout="wide")
+st.set_page_config(page_title="AyooX Nexus | Live Pulse", layout="wide")
 
-st.title("🛡️ AyooX: 1TB Virtual Pipeline Monitor")
+def load_vitals():
+    try:
+        # Durable state reading from the live heartbeat log
+        if os.path.exists("handshake.log"):
+            with open("handshake.log", "r") as f:
+                return json.load(f)
+    except:
+        pass
+    return {"status": "CONNECTING...", "throughput": "0 GB/s"}
+
+v = load_vitals()
+
+st.title("🛡️ AyooX Nexus: Durable Pipeline Monitor")
 st.subheader("Sovereign Identity: ayodeleomolabi@ayoox.com")
 
-# Operational Metrics linked to Handshake v1.5
-col1, col2, col3 = st.columns(3)
-col1.metric("Throughput", "124 MB/s", "+12%")
-col2.metric("Sentry Verification", "ACTIVE", "RUST_v10")
-col3.metric("Disk Buffer Usage", "0.02 GB", "STABLE") # Protecting the 14.8GB limit
+# Operational Evidence Metrics
+c1, c2, c3 = st.columns(3)
+c1.metric("Metabolic Throughput", v.get("throughput", "0 GB/s"), delta="LIVE")
+c2.metric("Sentry Verification", v.get("status", "SEARCHING..."))
+c3.metric("System Health", "DURABLE" if v.get("status") == "RSA_SIGN_VERIFIED" else "RETRYING")
 
-st.divider()
+# Metadata scar log (Observed Reality)
+if "session_id" in v:
+    st.info(f"Session Trace: {v['session_id']} | Load: {v.get('rate_limit_usage', '0%')}")
 
-st.write("### Verified Feasibility Scoring (Vertex AI)")
-# This block simulates the ingestion of the clinical dataset landing in Vertex
-df = pd.DataFrame({
-    'Time': pd.date_range(start='now', periods=30, freq='S'),
-    'Protocol Match': pd.Series([1.2, 1.5, 1.8, 2.1, 2.3, 2.5] * 5).rolling(window=3).mean(),
-    'Regulatory Risk': pd.Series([0.5, 0.4, 0.3, 0.2, 0.1, 0.1] * 5)
-})
-st.line_chart(df.set_index('Time'))
-
-st.write("### The Scar Log: Operational Evidence")
-st.success("Handshake established via direct-path bypass: node_modules/capnweb/dist/index.js")
+# Force live rerun every second for real-time observability
+time.sleep(1)
+st.rerun()
